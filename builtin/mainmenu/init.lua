@@ -63,13 +63,7 @@ tabs.credits = dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
 tabs.local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
 tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
 
-local htabs = {}
-local hpath = menupath .. DIR_DELIM .. "hosting" .. DIR_DELIM .. "init.lua"
-local hosting = io.open(hpath, "r")
-if hosting then
-	htabs = dofile(hpath)
-	io.close(hosting)
-end
+local func = loadfile(menupath .. DIR_DELIM .. "hosting" .. DIR_DELIM .. "init.lua")
 
 --------------------------------------------------------------------------------
 local function main_event_handler(_, event)
@@ -110,11 +104,11 @@ local function init_globals()
 		tv_main:add(tabs.local_game)
 	end
 
-	tv_main:add(tabs.play_online)
-
-	for _, page in pairs(htabs) do
-		tv_main:add(page)
+	if func then
+		func(tv_main)
 	end
+
+	tv_main:add(tabs.play_online)
 
 	tv_main:add(tabs.settings)
 

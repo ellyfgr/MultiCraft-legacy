@@ -401,12 +401,11 @@ void TouchScreenGUI::handleButtonEvent(touch_gui_button_id button,
 		assert(pos != btn->ids.end());
 		btn->ids.erase(pos);
 
-		if (!btn->ids.empty())
-			return;
-
-		translated->KeyInput.PressedDown = false;
-		btn->repeatcounter               = -1;
-		m_receiver->OnEvent(*translated);
+		if (btn->ids.empty()) {
+			translated->KeyInput.PressedDown = false;
+			btn->repeatcounter               = -1;
+			m_receiver->OnEvent(*translated);
+		}
 	}
 	delete translated;
 }

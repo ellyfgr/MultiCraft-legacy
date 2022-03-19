@@ -79,10 +79,10 @@ local function formspec(tabview, name, tabdata)
 			tonumber(fps <= 30 and 1 or fps == 35 and 2 or fps == 45 and 3 or 4) .. "]" ..
 
 		"label[4.25,1.5;" .. fgettext("Viewing range") .. ":]" ..
-		"dropdown[4.25,1.95;3.5;dd_viewing_range;25,30,40,60,80,100,125,150,175,200;" ..
-			tonumber(range <= 25 and 1 or range == 30 and 2 or range == 40 and 3 or
-			range == 60 and 4 or range == 80 and 5 or range == 100 and 6 or range == 125 and 7 or
-			range == 150 and 8 or range == 175 and 9 or 10) .. "]" ..
+		"dropdown[4.25,1.95;3.5;dd_viewing_range;30,40,60,80,100,125,150,175,200;" ..
+			tonumber(range <= 30 and 1 or range == 40 and 2 or range == 60 and 3 or
+			range == 80 and 4 or range == 100 and 5 or range == 125 and 6 or
+			range == 150 and 7 or range == 175 and 8 or 9) .. "]" ..
 
 		"label[4.25,2.85;" .. fgettext("Node highlighting") .. ":]" ..
 		"dropdown[4.25,3.3;3.5;dd_node_highlighting;" .. dd_options.node_highlighting[1] .. ";"

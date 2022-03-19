@@ -1689,17 +1689,6 @@ void Game::run()
 	while (device->run()
 			&& !(*kill || g_gamecallback->shutdown_requested
 			|| (server && server->getShutdownRequested()))) {
-#if defined(__MACH__) && defined(__APPLE__) && !defined(__IOS__)
-		if (!device->isWindowFocused()) {
-			sleep_ms(50);
-			continue;
-		}
-#elif defined(__ANDROID__) || defined(__IOS__)
-		if (device->isWindowMinimized()) {
-			sleep_ms(50);
-			continue;
-		}
-#endif
 
 		const irr::core::dimension2d<u32> &current_screen_size =
 			device->getVideoDriver()->getScreenSize();
@@ -1718,6 +1707,16 @@ void Game::run()
 		 * uses device->getTimer()->getTime()
 		 */
 		limitFps(&draw_times, &dtime);
+
+#if defined(__MACH__) && defined(__APPLE__) && !defined(__IOS__)
+		if (!device->isWindowFocused()) {
+			sleep_ms(50);
+			continue;
+		}
+#elif defined(__ANDROID__) || defined(__IOS__)
+		if (device->isWindowMinimized())
+			continue;
+#endif
 
 		updateStats(&stats, draw_times, dtime);
 		updateInteractTimers(dtime);
@@ -3186,19 +3185,6 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 
 inline void Game::step(f32 *dtime)
 {
-#if defined(__ANDROID__) || defined(__IOS__)
-	if (g_menumgr.pausesGame()) {
-		runData.pause_game_timer += *dtime;
-		float disconnect_time = 180.0f;
-#ifdef __IOS__
-		disconnect_time = simple_singleplayer_mode ? 60.0f : 120.0f;
-#endif
-		if (runData.pause_game_timer > disconnect_time) {
-			g_gamecallback->disconnect();
-			return;
-		}
-	}
-#endif
 	bool can_be_and_is_paused =
 			(simple_singleplayer_mode && g_menumgr.pausesGame());
 
@@ -4634,6 +4620,20 @@ inline void Game::limitFps(FpsControl *fps_timings, f32 *dtime)
 		*dtime = 0;
 
 	fps_timings->last_time = time;
+
+#if defined(__ANDROID__) || defined(__IOS__)
+	if (g_menumgr.pausesGame()) {
+		runData.pause_game_timer += *dtime;
+		float disconnect_time = 180.0f;
+#ifdef __IOS__
+		disconnect_time = simple_singleplayer_mode ? 60.0f : 120.0f;
+#endif
+		if (runData.pause_game_timer > disconnect_time) {
+			g_gamecallback->disconnect();
+			return;
+		}
+	}
+#endif
 }
 
 // Note: This will free (using delete[])! \p msg. If you want to use it later,
